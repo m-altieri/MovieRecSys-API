@@ -1,0 +1,1013 @@
+FORMAT: 1A
+
+# MovieRecSys API
+
+# Group Dialog
+
+This is the official MovieRecSys API.
+
+## User interaction [/{?userID,messageID,timeStamp,text,firstname,botName}]
+
+Manages user interaction
+
+### Get the reply to send to the user [GET]
+
+Send the user's message to the dialog manager, which will return an object containing messages and a keyboard markup to reply with.
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + messageID : 7219 (string, required) - ID of the message
+    
+    + timeStamp : 1516386421 (string, required) - Timestamp of the message in UNIX time
+    
+    + text : home (string, required) - Text of the message
+    
+    + firstname : Massi (string, required) - Firstname of the user
+    
+    + botName : movierecsysbot (string, required) - Name of the bot
+
++ Request
+
+    + Headers
+
+            Accept: application/json
+
+    + Body
+
++ Response 200 (application/json)
+
+    Success
+    
+    + Attributes
+        
+        + messages (array, required) - All the messages to send to the user
+            + (object) - A message; contains text, and may also contain a photo url and/or a link
+                + text (string, required) - Text of this message
+                + photo (string) - URL to a poster
+                + link (string) - URL to a trailer
+        + reply_markup (object) - The entire markup with which the user can continue the interaction
+            + keyboard (array, required) - A set of options that the user can reply with
+                + row (array) - A set of options shown on the same row
+                    + option (string) - A single option
+
+    + Body
+
+            {
+              "messages": [
+                {
+                  "text": "text"
+                },
+                {
+                  "link": "null",
+                  "photo": "null",
+                  "text": "text"
+                }
+              ],
+              "reply_markup": {
+                "keyboard": [
+                    [
+                        "first row with 1 option"
+                    ],
+                    [
+                        "second row", 
+                        "with 2 options"
+                    ]
+                ],
+                "resize_keyboard": true,
+                "one_time_keyboard": false
+              }
+            }
+
+    + Schema
+
+            {
+              "type": "object",
+              "required": [
+                "messages"
+              ],
+              "properties": {
+                "messages": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "text"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "description": "Reply text to send to the user. May contains '*' and '_' markdown characters to indicate that what inside should be displayed to the user in bold and italic style respectively."
+                      },
+                      "photo": {
+                        "type": "string",
+                        "description": "URL of the movie poster"
+                      },
+                      "link": {
+                        "type": "string",
+                        "description": "URL of the movie trailer"
+                      }
+                    },
+                    "description": "Text message that the bot should send to the user",
+                    "example": {
+                      "link": "null",
+                      "photo": "null",
+                      "text": "text"
+                    }
+                  }
+                },
+                "reply_markup": {
+                  "properties": {
+                    "keyboard": {
+                      "type": "array",
+                      "description": "Keyboard to provide to the user to continue the interaction",
+                      "items": {
+                        "type": "array",
+                        "description": "Row of the keyboard",
+                        "items": {
+                          "type": "string",
+                          "description": "Button of the keyboard"
+                        }
+                      }
+                    },
+                    "resize_keyboard": {
+                      "type": "boolean",
+                      "description": "Keyboard should be resizable by the user"
+                    },
+                    "one_time_keyboard": {
+                      "type": "boolean",
+                      "description": "Keyboard should disappear once used"
+                    }
+                  },
+                  "example": {
+                    "keyboard": "",
+                    "resize_keyboard": true,
+                    "one_time_keyboard": true
+                  }
+                }
+              }
+            }
+
+# Group Delete
+
+Services for deleting user preferences
+
+## Delete rated properties [GET /delete/deleteAllPropertyRated{?userID}]
+
+Delete all rated properties for the given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+
++ Request
+
+    + Headers
+
+            Accept: application/json
+
+    + Body
+
++ Response 200 (application/json)
+
+    Returns the number of rated properties left after deletion.
+    If user doesn't exist or has no rated properties, this returns "null".
+
+    + Attributes
+    
+        + n : 0 (number) - 0 if details have been erased completely, a positive integer otherwise
+        
+    + Body
+
+            0
+
+    + Schema
+
+            {
+                "oneOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+
+## Delete rated movies [GET /delete/deleteAllMovieRated{?userID}]
+
+Delete all rated movies for the given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+
++ Request
+
+    + Headers
+
+            Accept: application/json
+
++ Response 200 (application/json)
+
+    Returns the number of rated movies left after deletion.
+    If user doesn't exist or has no rated movies, this returns "null".
+    
+    + Attributes
+    
+        + n : 0 (number) - Number of rated movies left after deletion
+
+    + Body
+
+            0
+            
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+
+## Delete chat messages [GET /delete/deleteAllChatMessage{?userID}]
+
+Delete all chat messages for the given user
+
++ Parameters
+    
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+        
+            Accept: application/json
+
++ Response 200 (application/json)
+
+    Returns the number of chat messages left after deletion.
+    If user doesn't exist or has no chat messages, this returns "null".
+
+    + Attributes
+    
+        + n : 0 (number) - Number of chat messages left after deletion
+            
+    + Body
+    
+            0
+
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+## Delete recommended movies [GET /delete/deleteAllRecMovies{?userID}]
+
+Delete all recommended movies for the given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    OK
+    
+    + Body
+    
+            "deleteAllRecMovies"
+            
+    + Schema
+    
+            {
+                "type": "string",
+                "enum": [
+                    "deleteAllRecMovies"
+                ]
+            }
+            
+## Delete all profile [GET /delete/deleteAllProfile{?userID}]
+
+Delete all profile for the given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns 0 if the profile was erased, "null" if user doesn't exist or profile was already empty, or a positive integer if profile wasn't completely erased.
+    
+    + Attributes
+    
+        + n : 0 (number) - 0 if profile has been erased completely, a positive integer otherwise
+            
+            
+    + Body
+    
+            0
+
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+## Delete all user details [GET /delete/deleteAllUserDetail{?userID}]
+
+Delete all details for the given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Header
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns 0 if details were erased, "null" if user doesn't exist or details were already empty, or a positive integer if details weren't completely erased.
+    
+    + Attributes
+    
+        + n : 0 (number) - 0 if details have been erased completely, a positive integer otherwise
+        
+    + Body
+    
+            0
+        
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+# Group Ratings
+
+Get information about ratings: movie ratings, property ratings, movies to rate, etc.
+
+## Get all ratings [GET /getRatings/getAllMovieOrPropertyRatings{?userID}]
+
+Get all user ratings, about both properties and movies
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Header
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns all ratings for the given user, or "null" if either the user doesn't exist or has no ratings.
+    Every item is composed of a type and a resource.
+    A type may be a natural word (e.g. movie) or a resource URI (e.g. http://dbpedia.org/ontology/director).
+    The value is a resource URI (e.g. http://dbpedia.org/resource/Interstellar_(film)).
+    The rating may be: *1* for like, or *0* for dislike.
+    
+    + Attributes
+    
+        + type,value : 1 (number) - 1 for like, 0 for dislike
+        
+    + Body
+    
+            {
+                "movie,http://dbpedia.org/resource/Interstellar_(film)": 1,
+                "http://dbpedia.org/ontology/director,http://dbpedia.org/resource/Woody_Allen": 0
+            }
+            
+    + Schema
+        
+            {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "/": {}
+                        },
+                        "patternProperties": {
+                            "^[^,]+,[^,]+$": {
+                                "type": "integer"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+## Get property rating [GET /ratings/getPropertyRating{?userID,propertyTypeUri,propertyUri,lastChange}]
+
+Get the rating for a given property for a given user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + propertyTypeUri : http://dbpedia.org/ontology/director (string, required) - DBpedia URI of the property type
+    
+    + propertyUri : http://dbpedia.org/resource/Woody_Allen (string, required) - DBPedia URI of the resource
+    
+    + lastChange : user (string, required) - *Da eliminare* Necessario a causa dell'iniziale implementazione. Impostare come "user".
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns a JSON with the rating and the date when it was rated, or "null" if that rating doesn't exist for that user.
+    
+    + Attributes
+    
+        + property_type_uri : "http://dbpedia.org/ontology/director" (string, required) - The same URI provided for the property type
+        
+        + user_id : "425975499" (string, required) - The same ID provided for the user
+        
+        + last_change : "user" (string, required) - The same value provided for lastChange
+        
+        + rating : "1" (string, required) - The actual rating. "1" if it's a positive rating, "0" if it's a negative rating
+        
+        + rated_at : "2018-01-20 12:06:21.0" (string, required) - The date when the property was rated
+        
+        + property_uri : "http://dbpedia.org/resource/Woody_Allen" (string, required) - The same URI provided for the property resource
+    
+    + Body
+    
+            {
+                "property_type_uri": "http://dbpedia.org/ontology/director",
+                "user_id": "425975499",
+                "last_change": "user",
+                "rating": "1",
+                "rated_at": "2018-01-20 12:00:53.0",
+                "property_uri": "http://dbpedia.org/resource/Woody_Allen"
+            }
+            
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "property_type_uri": {
+                                "type": "string"
+                            },
+                            "user_id": {
+                                "type": "string"
+                            },
+                            "last_change": {
+                                "type": "string"
+                            },
+                            "rating": {
+                                "type": "string"
+                            },
+                            "rated_at": {
+                                "type": "string"
+                            },
+                            "property_uri": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+## Get movie to rate [GET /ratings/getMovieToRate{?userID}]
+
+Get the movie to rate for the given user based on movie popularity, or "null" if no movie can be found
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+    
+    + Body
+    
+            "http://dbpedia.org/resource/Gladiator_(2000_film)"
+    
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^http://dbpedia.org/resource/"
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+
+## Get movie to rate by diversity [GET /ratings/getMovieToRateByDiversity{?userID}]
+
+Get the movie to rate for the given user based on movie diversity, or "null" if no movie can be found
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    + Body
+    
+            "http://dbpedia.org/resource/Django_Unchained"
+            
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^http://dbpedia.org/resource/"
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+## Get movies to rate from Jaccard distance map [GET /ratings/getMoviesToRateFromJaccardDistanceMap{?userID}]
+
+Get a list of movies to rate ordered by Jaccard distance, or "null" if list is empty
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "http://dbpedia.org/resource/Soul_Men": 0.9497206703910615,
+                "http://dbpedia.org/resource/2_Fast_2_Furious": 0.9497206703910615,
+                "http://dbpedia.org/resource/Eraser_(film)": 0.9497206703910615,
+                "http://dbpedia.org/resource/White_Chicks": 0.9497206703910615,
+                "http://dbpedia.org/resource/A_Most_Violent_Year": 0.9497206703910615,
+                "http://dbpedia.org/resource/Hollywood_Homicide": 0.9497206703910615,
+                "http://dbpedia.org/resource/Changeling_(film)": 0.949438202247191,
+                "http://dbpedia.org/resource/Gloria_(1999_American_film)": 0.949438202247191,
+                "http://dbpedia.org/resource/Pulp_Fiction": 0.949438202247191,
+                "http://dbpedia.org/resource/Seven_Psychopaths": 0.949438202247191,
+                "http://dbpedia.org/resource/Otis_(film)": 0.9491525423728814,
+                "http://dbpedia.org/resource/Fracture_(2007_film)": 0.9491525423728814,
+                "http://dbpedia.org/resource/How_Do_You_Know": 0.9491525423728814,
+                "http://dbpedia.org/resource/Hero_Wanted": 0.9488636363636364,
+                "http://dbpedia.org/resource/Spartan_(film)": 0.9488636363636364,
+                "http://dbpedia.org/resource/Seven_Pounds": 0.9488636363636364,
+                "http://dbpedia.org/resource/Hard_Candy_(film)": 0.9488636363636364,
+                "http://dbpedia.org/resource/True_Lies": 0.9487179487179487,
+                "http://dbpedia.org/resource/Wild_America_(film)": 0.9485714285714286,
+                "http://dbpedia.org/resource/Rain_Man": 0.9484536082474226
+            }
+            
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "patternProperties": {
+                            "^http://dbpedia.org/resource/": {
+                                "type": "number"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+
+## Put movie rating [GET /putRatings/putMovieRating{?userID,movieURI,rating,lastChange}]
+
+Returns the number of rated movies for the given user, after putting this rating
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + movieURI : http://dbpedia.org/resource/Pulp_Fiction (string, required) - DBpedia URI for the movie
+    
+    + rating : 1 (string, required) - 1 for a positive rating, 0 for a negative rating
+    
+    + lastChange : user (string, required) - *Da eliminare* Necessario a causa dell'iniziale implementazione. Impostare come "user".
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    + Body
+    
+            9
+            
+    + Schema
+    
+            {
+                "type": "integer"
+            }
+
+## Put property rating [GET /putRatings/putPropertyRating{?userID,propertyTypeURI,propertyURI,rating,lastChange}]
+
+Returns the number of rated properties for the given user, after putting this rating
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + propertyTypeURI : http://dbpedia.org/ontology/director (string, required) - DBpedia URI of the property type
+    
+    + propertyURI : http://dbpedia.org/resource/Woody_Allen (string, required) - DBPedia URI of the resource
+    
+    + rating : 1 (string, required) - 1 for a positive rating, 0 for a negative rating
+    
+    + lastChange : user (string, required) - *Da eliminare* Necessario a causa dell'iniziale implementazione. Impostare come "user".
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+
++ Response 200 (application/json)
+    
+    + Body
+        
+            2
+    
+    + Schema
+    
+            {
+                "type": "integer"
+            }
+
+# Group Resources
+
+Get movie details
+
+## Get all properties from movie [GET /movieDetail/getAllPropertyListFromMovie{?movieName}]
+
+Get all the properties from a given movie
+
++ Parameters
+
+    + movieName : Pulp_Fiction (string, required) - Name of the movie, with underscores ( _ ) instead of spaces
+    
++ Request
+
+    + Header
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns all movie properties formatted as an array of RDF triples, with every triple being composed of: 
+    
+    - *movie URI*,
+    - *property URI*,
+    - *value URI*
+   
+    Returns "null" if provided movie doesn't exist.
+    
+    + Body
+    
+            {
+                "http://dbpedia.org/resource/Pulp_Fiction": [
+                    [
+                        "http://dbpedia.org/resource/Pulp_Fiction",
+                        "http://dbpedia.org/ontology/director",
+                        "http://dbpedia.org/resource/Quentin_Tarantino"
+                    ],
+                    [
+                        "http://dbpedia.org/resource/Pulp_Fiction",
+                        "http://dbpedia.org/ontology/producer",
+                        "http://dbpedia.org/resource/Lawrence_Bender"
+                    ],
+                    [
+                        "http://dbpedia.org/resource/Pulp_Fiction",
+                        "http://dbpedia.org/ontology/writer",
+                        "http://dbpedia.org/resource/Quentin_Tarantino"
+                    ]
+                ]
+            }
+    
+    + Schema
+            
+            {
+                "$schema": "http://json-schema.org/schema#",
+                "id": "/movieDetail/getAllPropertyListFromMovie",
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[^,]+$": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "array",
+                                    "items": {},
+                                    "minItems": 3,
+                                    "maxItems": 3
+                                }
+                            }
+                        },
+                        "additionalProperties": false,
+                        "minProperties": 1,
+                        "maxProperties": 1
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "null"
+                        ]
+                    }
+                ]
+            }
+            
+# Group Recommendation
+
+Recommendation services
+
+## Get movie explanation [GET /explanation/getMovieExplanation{?userID,movieName}]
+
+Get the current explanation for why a movie has been recommended to a specific user
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + movieName : Pulp_Fiction (string, required) - Name of the movie, with underscores ( _ ) instead of spaces
+    
++ Request
+
+    + Headers
+        
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns either:
+    - the explanation or
+    - "Sorry, this recommendation is serendipitous also for me \U0001f642.\nI\u2019m not able to provide an explanation \U0001f914"
+        
+    + Body
+    
+            "I suggest \"The Dark Knight Rises\" because you like films where: \nThe director is Christopher Nolan as in Interstellar\nThe genre is Adventure as in Interstellar\nThe genre is Drama as in Flags of Our Fathers\nThe musicComposer is Hans Zimmer as in Interstellar."
+
+    + Schema
+    
+            {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "enum": [
+                            "I suggest \"The Dark Knight Rises\" because you like films where: \nThe director is Christopher Nolan as in Interstellar\nThe genre is Adventure as in Interstellar\nThe genre is Drama as in Flags of Our Fathers\nThe musicComposer is Hans Zimmer as in Interstellar."
+                        ]
+                    },
+                    {
+                        "type": "string",
+                        "enum": [
+                            "Sorry, this recommendation is serendipitous also for me 🙂.\nI’m not able to provide an explanation 🤔"
+                        ]
+                    }
+                ]
+            }
+
+# Group Users
+
+Put and retrieve information about the users
+
+## User detail [/users/userDetail{?userID,firstname,lastname,username}]
+
+Put and retrieve users details (firstname, lastname, username)
+
+### Get user detail [GET]
+
++ Parameters
+    
+    + userID : 425975499 (string, required) - ID of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    + Attributes
+    
+        + firstname : Massi (string, required) - First name of the user, can be empty
+        
+        + id : 425975499 (string, required) - ID of the user, the same as the one provided
+        
+        + lastname: "" (string, required) - Last name of the user, can be empty
+        
+        + username: "" (string, required) - Username of the user, can be empty
+    
+    + Body
+    
+            {
+                "firstname": "Massi",
+                "id": "425975499",
+                "lastname": "",
+                "username": ""
+            }
+
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            }
+    
+### Put user detail [PUT]
+
++ Parameters
+
+    + userID : 425975499 (string, required) - ID of the user
+    
+    + firstname : Massimiliano (string, required) - First name of the user
+    
+    + lastname : Altieri (string, required) - Last name of the user
+    
+    + username : Massi (string, required) - Username of the user
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the same ID that was provided
+    
+    + Body
+    
+            "425975499"
+            
+    + Schema
+    
+            {
+                "type": "string"
+            }
+
+## User age [/users/age{?userID,age}]
+
+### Put user age [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+    
+    + age: 21 (string, required) - User age as years
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+
++ Response 200 (application/json)
+
+    Returns the same age that was provided
+    
+    + Body
+    
+            "21"
+    
+    + Schema
+    
+            {
+                "type": "string"
+            }
