@@ -2,17 +2,17 @@ FORMAT: 1A
 
 # MovieRecSys API
 
-# Group Dialog
-
 This is the official MovieRecSys API.
 
-## User interaction [/{?userID,messageID,timeStamp,text,firstname,botName}]
+# Group Dialog
 
 Manages user interaction
 
-### Get the reply to send to the user [GET]
+## User interaction [/{?userID,messageID,timeStamp,text,firstname,botName}]
 
-Send the user's message to the dialog manager, which will return an object containing messages and a keyboard markup to reply with.
+### Reply to the user [GET]
+
+Get the response to reply to the user with. It can contain messages and a keyboard markup.
 
 + Parameters
 
@@ -43,13 +43,21 @@ Send the user's message to the dialog manager, which will return an object conta
     + Attributes
         
         + messages (array, required) - All the messages to send to the user
-            + (object) - A message; contains text, and may also contain a photo url and/or a link
+        
+            + (object)
+            
                 + text (string, required) - Text of this message
+                
                 + photo (string) - URL to a poster
+                
                 + link (string) - URL to a trailer
+                
         + reply_markup (object) - The entire markup with which the user can continue the interaction
+        
             + keyboard (array, required) - A set of options that the user can reply with
+            
                 + row (array) - A set of options shown on the same row
+                
                     + option (string) - A single option
 
     + Body
@@ -167,17 +175,11 @@ Delete all rated properties for the given user
 
             Accept: application/json
 
-    + Body
-
 + Response 200 (application/json)
 
     Returns the number of rated properties left after deletion.
     If user doesn't exist or has no rated properties, this returns "null".
 
-    + Attributes
-    
-        + n : 0 (number) - 0 if details have been erased completely, a positive integer otherwise
-        
     + Body
 
             0
@@ -217,10 +219,6 @@ Delete all rated movies for the given user
 
     Returns the number of rated movies left after deletion.
     If user doesn't exist or has no rated movies, this returns "null".
-    
-    + Attributes
-    
-        + n : 0 (number) - Number of rated movies left after deletion
 
     + Body
 
@@ -261,11 +259,7 @@ Delete all chat messages for the given user
 
     Returns the number of chat messages left after deletion.
     If user doesn't exist or has no chat messages, this returns "null".
-
-    + Attributes
-    
-        + n : 0 (number) - Number of chat messages left after deletion
-            
+ 
     + Body
     
             0
@@ -335,12 +329,7 @@ Delete all profile for the given user
 + Response 200 (application/json)
 
     Returns 0 if the profile was erased, "null" if user doesn't exist or profile was already empty, or a positive integer if profile wasn't completely erased.
-    
-    + Attributes
-    
-        + n : 0 (number) - 0 if profile has been erased completely, a positive integer otherwise
-            
-            
+   
     + Body
     
             0
@@ -379,11 +368,7 @@ Delete all details for the given user
 + Response 200 (application/json)
 
     Returns 0 if details were erased, "null" if user doesn't exist or details were already empty, or a positive integer if details weren't completely erased.
-    
-    + Attributes
-    
-        + n : 0 (number) - 0 if details have been erased completely, a positive integer otherwise
-        
+
     + Body
     
             0
@@ -426,7 +411,7 @@ Get all user ratings, about both properties and movies
 + Response 200 (application/json)
 
     Returns all ratings for the given user, or "null" if either the user doesn't exist or has no ratings.
-    Every item is composed of a type and a resource.
+    Every item is composed of a type and a resource, like this: `"http://typeURI.com,http://valueURI.com"`.
     A type may be a natural word (e.g. movie) or a resource URI (e.g. http://dbpedia.org/ontology/director).
     The value is a resource URI (e.g. http://dbpedia.org/resource/Interstellar_(film)).
     The rating may be: *1* for like, or *0* for dislike.
@@ -467,7 +452,7 @@ Get all user ratings, about both properties and movies
                 ]
             }
             
-## Get property rating [GET /ratings/getPropertyRating{?userID,propertyTypeUri,propertyUri,lastChange}]
+## Get property rating [GET /getRatings/getPropertyRating{?userID,propertyTypeUri,propertyUri,lastChange}]
 
 Get the rating for a given property for a given user
 
@@ -553,7 +538,7 @@ Get the rating for a given property for a given user
                 ]
             }
             
-## Get movie to rate [GET /ratings/getMovieToRate{?userID}]
+## Get movie to rate [GET /getRatings/getMovieToRate{?userID}]
 
 Get the movie to rate for the given user based on movie popularity, or "null" if no movie can be found
 
@@ -590,7 +575,7 @@ Get the movie to rate for the given user based on movie popularity, or "null" if
                 ]
             }
 
-## Get movie to rate by diversity [GET /ratings/getMovieToRateByDiversity{?userID}]
+## Get movie to rate by diversity [GET /getRatings/getMovieToRateByDiversity{?userID}]
 
 Get the movie to rate for the given user based on movie diversity, or "null" if no movie can be found
 
@@ -627,7 +612,7 @@ Get the movie to rate for the given user based on movie diversity, or "null" if 
                 ]
             }
             
-## Get movies to rate from Jaccard distance map [GET /ratings/getMoviesToRateFromJaccardDistanceMap{?userID}]
+## Get movies to rate from Jaccard distance map [GET /getRatings/getMoviesToRateFromJaccardDistanceMap{?userID}]
 
 Get a list of movies to rate ordered by Jaccard distance, or "null" if list is empty
 
@@ -758,8 +743,6 @@ Returns the number of rated properties for the given user, after putting this ra
 
 # Group Resources
 
-Get movie details
-
 ## Get all properties from movie [GET /movieDetail/getAllPropertyListFromMovie{?movieName}]
 
 Get all the properties from a given movie
@@ -862,8 +845,8 @@ Get the current explanation for why a movie has been recommended to a specific u
 + Response 200 (application/json)
 
     Returns either:
-    - the explanation or
-    - "Sorry, this recommendation is serendipitous also for me \U0001f642.\nI\u2019m not able to provide an explanation \U0001f914"
+    * the explanation, or
+    * "Sorry, this recommendation is serendipitous also for me 🙂.\nI'm not able to provide an explanation 🤔"
         
     + Body
     
@@ -982,7 +965,7 @@ Put and retrieve users details (firstname, lastname, username)
                 "type": "string"
             }
 
-## User age [/users/age{?userID,age}]
+## User age [/users/userAge{?userID,age}]
 
 ### Put user age [PUT]
 
@@ -1006,6 +989,232 @@ Put and retrieve users details (firstname, lastname, username)
     
             "21"
     
+    + Schema
+    
+            {
+                "type": "string"
+            }
+            
+## User gender [/users/userGender{?userID,gender}]
+            
+### Put user gender [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+
+    + gender : m (string, required) - Gender of the user. Use **m** for male and **f** for female.
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the same gender that was provided
+    
+    + Body
+    
+            "m"
+            
+    + Schema
+    
+            {
+                "type": "string",
+                "enum": [
+                    "m",
+                    "f"
+                ]
+            }
+    
+## User education [/users/userEducation{?userID,education}]
+
+### Put user education [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+    
+    + education : Computer Science Degree (string, required) - Any string representing the user's education
+    
++ Request
+
+    + Headers
+            
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the same education that was provided
+    
+    + Body
+    
+            "Computer Science Degree"
+            
+    + Schema
+    
+            {
+                "type": "string"
+            }
+            
+## User interest in movies [/users/userInterestInMovies{?userID,interestInMovies}]
+
+### Put user interest in movies [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+
+    + interestInMovies : I like horror movies (string, required) - Any string representing the user's interest in movies
+            
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the text of *interestInMovies*
+    
+    + Body
+    
+            "I like horror movies"
+            
+    + Schema
+    
+            {
+                "type": "string"
+            }
+            
+## User used recommender systems [/users/userUsedRecommenderSystems{?userID,usedRecSys}]
+
+### Put user used recommender systems [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+
+    + usedRecSys: movierecsysbot (string, required) - Any string representing the recommender systems used by the user
+
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the text of *usedRecSys*
+    
+    + Body
+    
+            "movierecsysbot"
+            
+    + Schema
+    
+            {
+                "type": "string"
+            }
+    
+# Group Bot
+    
+## Bot name [/bot/botName{?userID,botName}]
+
+### Put bot name [PUT]
+
++ Parameters
+
+    + userID: 425975499 (string, required) - ID of the user
+
+    + botName: movierecsysbot (string, required) - Name of the bot used
+    
++ Request
+
+    + Headers
+    
+            Accept: application/json
+            
++ Response 200 (application/json)
+
+    Returns the same bot name that was provided
+    
+    + Body
+    
+            "movierecsysbot"
+            
+    + Schema
+    
+            {
+                "type": "string"
+            }
+            
+# Group Server
+
+Information about the state of the server.
+
+## Server status [/server/getStatus]
+
+### Get server status [GET]
+
+Get the current server status.
+
++ Request
+
+    + Headers
+    
+            Accept: text/plain
+            
++ Response 200 (text/plain)
+
+    + Body
+    
+            "Server Running"
+
++ Request
+
+    + Headers
+    
+            Accept: text/xml
+            
++ Response 200 (text/xml)
+
+    + Body
+    
+            "<?xml version="1.0"?><hi>Server Running</hi>"
+            
++ Request
+
+    + Headers
+    
+            Accept: text/html
+            
++ Response 200 (text/html)
+
+    + Body
+    
+            "<html><head><title>Server Status</title></head><body>Server Running</body></html>"
+            
+## Server version [/server/getVersion]
+
+### Get server version [GET]
+
+Get the current server version.
+
++ Request
+
+    + Headers
+    
+            Accept: text/plain
+
++ Response 200 (text/plain)
+
+    + Body
+    
+            "Apache Tomcat/8.5.23"
+            
     + Schema
     
             {
